@@ -123,7 +123,12 @@ def _http_call(url, method, authorization, **kw):
         req.add_header('Authorization', 'OAuth2 %s' % authorization)
     if boundary:
         req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
-    resp = urllib2.urlopen(req)
+    try:
+        resp = urllib2.urlopen(req)
+    except urllib2.HTTPError, e:
+        print e
+        print e.read()
+        raise e
     body = resp.read()
     r = json.loads(body, object_hook=_obj_hook)
     if hasattr(r, 'error_code'):
